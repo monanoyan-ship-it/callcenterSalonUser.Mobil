@@ -10,6 +10,7 @@ import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/marketing_models.dart';
 import 'package:callcenter_salonuser_mobil/models/before_after_models.dart';
 import 'package:callcenter_salonuser_mobil/models/consent_form_models.dart';
+import 'package:callcenter_salonuser_mobil/models/noshow_policy_models.dart';
 import 'package:callcenter_salonuser_mobil/models/waitlist_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
@@ -802,6 +803,21 @@ class SalonApiClient {
 
   Future<void> deleteConsentForm(int id) async {
     await _dio.delete<void>('/api/sln-consent-forms/$id');
+  }
+
+  // ─────────── Phase 11.5: NoShow Policy ───────────
+
+  Future<NoShowPolicy?> fetchNoShowPolicy() async {
+    final res = await _dio.get<dynamic>('/api/sln-noshow-policy');
+    final data = res.data;
+    if (data == null) return null;
+    if (data is Map<String, dynamic>) return NoShowPolicy.fromJson(data);
+    return null;
+  }
+
+  Future<NoShowPolicy> upsertNoShowPolicy(NoShowPolicyUpdate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>('/api/sln-noshow-policy', data: dto.toJson());
+    return NoShowPolicy.fromJson(res.data ?? {});
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
