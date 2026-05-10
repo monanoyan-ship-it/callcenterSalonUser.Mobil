@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
+import 'package:callcenter_salonuser_mobil/models/cash_models.dart';
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
@@ -439,6 +440,53 @@ class SalonApiClient {
   /// `PUT /api/sln-finance/invoices/{id}/cancel` — adisyonu iptal et.
   Future<void> cancelInvoice(int id) async {
     await _dio.put<void>('/api/sln-finance/invoices/$id/cancel');
+  }
+
+  // ─────────── Kasa (cash register + transactions) — sln-finance ───────────
+
+  Future<List<CashRegister>> fetchCashRegisters() async {
+    final res = await _dio.get<dynamic>('/api/sln-finance/cash-registers');
+    final raw = _asList(res.data);
+    return raw.map((e) => CashRegister.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<CashTransaction>> fetchCashTransactions(
+      int registerId, {DateTime? from, DateTime? to}) async {
+    final res = await _dio.get<dynamic>(
+      '/api/sln-finance/cash-registers/$registerId/transactions',
+      queryParameters: {
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+      },
+    );
+    final raw = _asList(res.data);
+    return raw.map((e) => CashTransaction.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<CashTransaction> addCashTransaction(
+      int registerId, CashTransactionCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-finance/cash-registers/$registerId/transactions',
+      data: dto.toJson(),
+    );
+    final data = res.data;
+    if (data == null) throw StateError('Hareket eklenemedi');
+    return CashTransaction.fromJson(data);
+  }
+
+  /// `GET /api/sln-finance/cash-registers/{id}/daily-summary` — anonymous summary
+  /// (totalIncome, totalExpense, netCash, vb.). UI tarafi raw map kullanir.
+  Future<Map<String, dynamic>> fetchCashDailySummary(int registerId) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/api/sln-finance/cash-registers/$registerId/daily-summary',
+    );
+    return res.data ?? {};
+  }
+
+  static List<dynamic> _asList(dynamic raw) {
+    if (raw is List) return raw;
+    if (raw is Map && raw['items'] is List) return raw['items'] as List<dynamic>;
+    return const [];
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
