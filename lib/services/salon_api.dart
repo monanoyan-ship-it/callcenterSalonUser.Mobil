@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:callcenter_salonuser_mobil/config/app_config.dart';
+import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -134,5 +135,112 @@ class SalonApiClient {
       '/api/auth/change-password',
       data: {'currentPassword': currentPassword, 'newPassword': newPassword},
     );
+  }
+
+  // ─────────── Appointments (sln-appointments) ───────────
+
+  /// `GET /api/sln-appointments?from=&to=&personnelId=&statusId=&slnClientId=&branchId=`
+  Future<List<Appointment>> getAppointments({
+    DateTime? from,
+    DateTime? to,
+    int? personnelId,
+    int? statusId,
+    int? slnClientId,
+    int? branchId,
+  }) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/api/sln-appointments',
+      queryParameters: <String, dynamic>{
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+        if (personnelId != null) 'personnelId': personnelId,
+        if (statusId != null) 'statusId': statusId,
+        if (slnClientId != null) 'slnClientId': slnClientId,
+        if (branchId != null) 'branchId': branchId,
+      },
+    );
+    final raw = res.data ?? [];
+    return raw.map((e) => Appointment.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Appointment> getAppointment(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-appointments/$id');
+    final data = res.data;
+    if (data == null) throw StateError('Boş yanıt');
+    return Appointment.fromJson(data);
+  }
+
+  Future<Appointment> createAppointment(AppointmentCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-appointments',
+      data: dto.toJson(),
+    );
+    final data = res.data;
+    if (data == null) throw StateError('Boş yanıt');
+    return Appointment.fromJson(data);
+  }
+
+  Future<void> updateAppointment(int id, AppointmentCreate dto) async {
+    await _dio.put<void>('/api/sln-appointments/$id', data: dto.toJson());
+  }
+
+  /// `PUT /api/sln-appointments/{id}/status` — yanıtta `{penalty, message}`.
+  Future<AppointmentStatusUpdate> updateAppointmentStatus({
+    required int id,
+    required int statusId,
+  }) async {
+    final res = await _dio.put<Map<String, dynamic>>(
+      '/api/sln-appointments/$id/status',
+      data: {'statusId': statusId},
+    );
+    return AppointmentStatusUpdate.fromJson(res.data ?? const {});
+  }
+
+  Future<void> deleteAppointment(int id) async {
+    await _dio.delete<void>('/api/sln-appointments/$id');
+  }
+
+  Future<bool> checkConflict({
+    required int personnelId,
+    required DateTime startTime,
+    required DateTime endTime,
+    int? excludeId,
+  }) async {
+    final res = await _dio.get<dynamic>(
+      '/api/sln-appointments/check-conflict',
+      queryParameters: {
+        'personnelId': personnelId,
+        'startTime': startTime.toUtc().toIso8601String(),
+        'endTime': endTime.toUtc().toIso8601String(),
+        if (excludeId != null) 'excludeId': excludeId,
+      },
+    );
+    return res.data == true;
+  }
+
+  Future<List<Map<String, dynamic>>> getAvailableStaff(List<int> serviceIds) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/api/sln-appointments/available-staff',
+      queryParameters: {'serviceIds': serviceIds.join(',')},
+    );
+    final raw = res.data ?? [];
+    return raw.cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> getAvailableSlots({
+    required int personnelId,
+    required DateTime date,
+    int durationMinutes = 30,
+  }) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/api/sln-appointments/available-slots',
+      queryParameters: {
+        'personnelId': personnelId,
+        'date': date.toIso8601String().split('T').first,
+        'durationMinutes': durationMinutes,
+      },
+    );
+    final raw = res.data ?? [];
+    return raw.cast<Map<String, dynamic>>();
   }
 }
