@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
+import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
@@ -225,6 +226,49 @@ class SalonApiClient {
     );
     final raw = res.data ?? [];
     return raw.cast<Map<String, dynamic>>();
+  }
+
+  // ─────────── Clients (sln-clients) ───────────
+
+  Future<List<SlnClient>> getClients({String? search}) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/api/sln-clients',
+      queryParameters: <String, dynamic>{
+        if (search != null && search.isNotEmpty) 'search': search,
+      },
+    );
+    final raw = res.data ?? [];
+    return raw.map((e) => SlnClient.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnClientDetail> getClient(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-clients/$id');
+    final data = res.data;
+    if (data == null) throw StateError('Boş yanıt');
+    return SlnClientDetail.fromJson(data);
+  }
+
+  Future<SlnClient> createClient(SlnClientCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-clients',
+      data: dto.toJson(),
+    );
+    final data = res.data;
+    if (data == null) throw StateError('Boş yanıt');
+    return SlnClient.fromJson(data);
+  }
+
+  Future<void> updateClient(int id, SlnClientCreate dto, {bool isFavorite = false}) async {
+    final body = {...dto.toJson(), 'isFavorite': isFavorite};
+    await _dio.put<void>('/api/sln-clients/$id', data: body);
+  }
+
+  Future<void> deleteClient(int id) async {
+    await _dio.delete<void>('/api/sln-clients/$id');
+  }
+
+  Future<void> unblockClient(int id) async {
+    await _dio.put<void>('/api/sln-clients/$id/unblock');
   }
 
   Future<List<Map<String, dynamic>>> getAvailableSlots({
