@@ -4,6 +4,7 @@ import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
+import 'package:callcenter_salonuser_mobil/models/sln_service.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
@@ -269,6 +270,52 @@ class SalonApiClient {
 
   Future<void> unblockClient(int id) async {
     await _dio.put<void>('/api/sln-clients/$id/unblock');
+  }
+
+  // ─────────── Services + Categories (sln-services) ───────────
+
+  Future<List<SlnServiceCategory>> getServiceCategories() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-services/categories');
+    final raw = res.data ?? [];
+    return raw
+        .map((e) => SlnServiceCategory.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<SlnServiceCategory> createCategory(SlnServiceCategoryCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-services/categories',
+      data: dto.toJson(),
+    );
+    final data = res.data;
+    if (data == null) throw StateError('Boş yanıt');
+    return SlnServiceCategory.fromJson(data);
+  }
+
+  Future<void> updateCategory(int id, SlnServiceCategoryCreate dto) async {
+    await _dio.put<void>('/api/sln-services/categories/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteCategory(int id) async {
+    await _dio.delete<void>('/api/sln-services/categories/$id');
+  }
+
+  Future<SlnService> createService(SlnServiceCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-services',
+      data: dto.toJson(),
+    );
+    final data = res.data;
+    if (data == null) throw StateError('Boş yanıt');
+    return SlnService.fromJson(data);
+  }
+
+  Future<void> updateService(int id, SlnServiceCreate dto) async {
+    await _dio.put<void>('/api/sln-services/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteService(int id) async {
+    await _dio.delete<void>('/api/sln-services/$id');
   }
 
   Future<List<Map<String, dynamic>>> getAvailableSlots({
