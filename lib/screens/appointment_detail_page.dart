@@ -1,4 +1,5 @@
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
+import 'package:callcenter_salonuser_mobil/screens/appointment_edit_dialog.dart';
 import 'package:callcenter_salonuser_mobil/services/salon_api.dart';
 import 'package:callcenter_salonuser_mobil/util/api_errors.dart';
 import 'package:callcenter_salonuser_mobil/widgets/appointment_tile.dart';
@@ -123,6 +124,25 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
             onPressed: () => Navigator.of(context).pop(_changed),
           ),
           title: const Text('Randevu detayı'),
+          actions: [
+            if (_appointment != null &&
+                !_appointment!.isCancelled &&
+                !_appointment!.isCompleted)
+              IconButton(
+                tooltip: 'Düzenle',
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        final saved = await AppointmentEditDialog.show(
+                            context, _appointment!);
+                        if (saved == true) {
+                          _changed = true;
+                          await _load();
+                        }
+                      },
+              ),
+          ],
         ),
         body: ResponsiveCenter(
           child: _loading
