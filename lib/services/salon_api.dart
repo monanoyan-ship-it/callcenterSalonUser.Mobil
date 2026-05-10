@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
+import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_membership.dart';
@@ -401,6 +402,43 @@ class SalonApiClient {
 
   Future<void> reactivateClientMembership(int id) async {
     await _dio.put<void>('/api/sln-memberships/$id/reactivate');
+  }
+
+  // ─────────── Adisyon (Invoice) — sln-finance ───────────
+
+  /// `GET /api/sln-finance/invoices` — opsiyonel from/to (UTC iso) + statusId filtreleri.
+  Future<List<SlnInvoice>> fetchInvoices({DateTime? from, DateTime? to, int? statusId}) async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-finance/invoices', queryParameters: {
+      if (from != null) 'from': from.toUtc().toIso8601String(),
+      if (to != null) 'to': to.toUtc().toIso8601String(),
+      if (statusId != null) 'statusId': statusId,
+    });
+    final raw = res.data ?? [];
+    return raw.map((e) => SlnInvoice.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  /// `GET /api/sln-finance/invoices/{id}` — detay.
+  Future<SlnInvoice> fetchInvoice(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-finance/invoices/$id');
+    final data = res.data;
+    if (data == null) throw StateError('Adisyon bulunamadi');
+    return SlnInvoice.fromJson(data);
+  }
+
+  /// `POST /api/sln-finance/invoices` — yeni adisyon (kayit + odeme).
+  Future<SlnInvoice> createInvoice(SlnInvoiceCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-finance/invoices',
+      data: dto.toJson(),
+    );
+    final data = res.data;
+    if (data == null) throw StateError('Adisyon olusturulamadi');
+    return SlnInvoice.fromJson(data);
+  }
+
+  /// `PUT /api/sln-finance/invoices/{id}/cancel` — adisyonu iptal et.
+  Future<void> cancelInvoice(int id) async {
+    await _dio.put<void>('/api/sln-finance/invoices/$id/cancel');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
