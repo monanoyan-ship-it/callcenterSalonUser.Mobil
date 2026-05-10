@@ -1,8 +1,11 @@
+import 'package:callcenter_salonuser_mobil/screens/branches_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/payment_info_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/personnel_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/reviews_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/settings_page.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
@@ -42,15 +45,20 @@ class MorePage extends StatelessWidget {
         label: 'Yorumlar',
         builder: (_) => const ReviewsPage(),
       ),
-      const _Module(
+      _Module(
         icon: Icons.settings_outlined,
         label: 'Salon ayarları',
-        phase: 'Phase 5',
+        builder: (_) => const SettingsPage(),
       ),
-      const _Module(
+      _Module(
+        icon: Icons.storefront_outlined,
+        label: 'Şubeler',
+        builder: (_) => const BranchesPage(),
+      ),
+      _Module(
         icon: Icons.account_balance_outlined,
         label: 'Ödeme bilgileri (IBAN)',
-        phase: 'Phase 5',
+        builder: (_) => const PaymentInfoPage(),
       ),
       const _Module(
         icon: Icons.bar_chart,
