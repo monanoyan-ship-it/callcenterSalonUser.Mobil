@@ -1,5 +1,7 @@
 import 'package:callcenter_salonuser_mobil/screens/branches_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/cash_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/invoices_list_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/loyalty_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/payment_info_page.dart';
@@ -22,6 +24,16 @@ class MorePage extends StatelessWidget {
     final session = context.watch<SessionState>();
     final scheme = Theme.of(context).colorScheme;
     final modules = <_Module>[
+      _Module(
+        icon: Icons.receipt_long_outlined,
+        label: 'Adisyonlar',
+        builder: (_) => const InvoicesListPage(),
+      ),
+      _Module(
+        icon: Icons.point_of_sale,
+        label: 'Kasa',
+        builder: (_) => const CashPage(),
+      ),
       _Module(
         icon: Icons.people_outline,
         label: 'Müşteriler',
