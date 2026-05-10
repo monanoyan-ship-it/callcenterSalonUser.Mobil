@@ -12,6 +12,7 @@ import 'package:callcenter_salonuser_mobil/models/before_after_models.dart';
 import 'package:callcenter_salonuser_mobil/models/consent_form_models.dart';
 import 'package:callcenter_salonuser_mobil/models/noshow_policy_models.dart';
 import 'package:callcenter_salonuser_mobil/models/package_models.dart';
+import 'package:callcenter_salonuser_mobil/models/personnel_price_models.dart';
 import 'package:callcenter_salonuser_mobil/models/waitlist_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
@@ -869,6 +870,25 @@ class SalonApiClient {
         if (notes != null) 'notes': notes,
       },
     );
+  }
+
+  // ─────────── Phase 11.7: PersonnelPrices ───────────
+
+  Future<List<PersonnelServicePrice>> fetchPersonnelPrices() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-personnel-prices');
+    return (res.data ?? []).map((e) => PersonnelServicePrice.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<PersonnelServicePrice> createPersonnelPrice(PersonnelServicePriceCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-personnel-prices',
+      data: dto.toJson(),
+    );
+    return PersonnelServicePrice.fromJson(res.data ?? {});
+  }
+
+  Future<void> deletePersonnelPrice(int id) async {
+    await _dio.delete<void>('/api/sln-personnel-prices/$id');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
