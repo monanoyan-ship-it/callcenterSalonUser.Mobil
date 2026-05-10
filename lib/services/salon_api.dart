@@ -403,6 +403,58 @@ class SalonApiClient {
     await _dio.put<void>('/api/sln-memberships/$id/reactivate');
   }
 
+  // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
+
+  /// `GET /api/sln-profile` — full profile JSON (raw map; UI gerekli alanları seçer).
+  Future<Map<String, dynamic>> getSalonProfile() async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-profile');
+    return res.data ?? {};
+  }
+
+  /// `POST /api/sln-profile` — `SlnSalonProfileUpdateDto`.
+  Future<void> saveSalonProfile({
+    String? description,
+    String? website,
+    String? instagramHandle,
+    String? facebookUrl,
+    bool isPublished = true,
+    int billingType = 1,
+  }) async {
+    await _dio.post<void>('/api/sln-profile', data: {
+      'description': description,
+      'website': website,
+      'instagramHandle': instagramHandle,
+      'facebookUrl': facebookUrl,
+      'isPublished': isPublished,
+      'billingType': billingType,
+    });
+  }
+
+  /// `PUT /api/sln-profile/page-settings` — visibility flags + JSON sectionOrder.
+  Future<void> savePageSettings(Map<String, dynamic> body) async {
+    await _dio.put<void>('/api/sln-profile/page-settings', data: body);
+  }
+
+  /// `GET /api/sln-profile/payment-info` — sub-merchant onboarding durumu.
+  Future<Map<String, dynamic>> getPaymentInfo() async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-profile/payment-info');
+    return res.data ?? {};
+  }
+
+  /// `POST /api/payments/sub-merchant` — onboarding (PS.4).
+  Future<Map<String, dynamic>> submitSubMerchant(Map<String, dynamic> body) async {
+    final res = await _dio.post<Map<String, dynamic>>('/api/payments/sub-merchant', data: body);
+    return res.data ?? {};
+  }
+
+  // ─────────── Branches (sln-branches) ───────────
+
+  Future<List<Map<String, dynamic>>> getBranches() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-branches');
+    final raw = res.data ?? [];
+    return raw.cast<Map<String, dynamic>>();
+  }
+
   Future<List<Map<String, dynamic>>> getAvailableSlots({
     required int personnelId,
     required DateTime date,
