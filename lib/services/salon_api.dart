@@ -4,6 +4,7 @@ import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:callcenter_salonuser_mobil/models/cash_models.dart';
+import 'package:callcenter_salonuser_mobil/models/expense_models.dart';
 import 'package:callcenter_salonuser_mobil/models/inventory_models.dart';
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/marketing_models.dart';
@@ -695,6 +696,45 @@ class SalonApiClient {
 
   Future<void> deactivateGiftCard(int id) async {
     await _dio.put<void>('/api/sln-gift-cards/$id/deactivate');
+  }
+
+  // ─────────── Phase 11.1: Expenses ───────────
+
+  Future<List<ExpenseCategory>> fetchExpenseCategories() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-finance/expense-categories');
+    return (res.data ?? []).map((e) => ExpenseCategory.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ExpenseCategory> createExpenseCategory(String name) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-finance/expense-categories',
+      data: {'name': name},
+    );
+    return ExpenseCategory.fromJson(res.data ?? {});
+  }
+
+  Future<List<Expense>> fetchExpenses({DateTime? from, DateTime? to, int? categoryId}) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/api/sln-finance/expenses',
+      queryParameters: {
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+        if (categoryId != null) 'categoryId': categoryId,
+      },
+    );
+    return (res.data ?? []).map((e) => Expense.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Expense> createExpense(ExpenseCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-finance/expenses',
+      data: dto.toJson(),
+    );
+    return Expense.fromJson(res.data ?? {});
+  }
+
+  Future<void> deleteExpense(int id) async {
+    await _dio.delete<void>('/api/sln-finance/expenses/$id');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
