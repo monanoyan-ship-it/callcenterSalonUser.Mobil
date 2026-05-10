@@ -9,6 +9,7 @@ import 'package:callcenter_salonuser_mobil/models/inventory_models.dart';
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/marketing_models.dart';
 import 'package:callcenter_salonuser_mobil/models/before_after_models.dart';
+import 'package:callcenter_salonuser_mobil/models/consent_form_models.dart';
 import 'package:callcenter_salonuser_mobil/models/waitlist_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
@@ -781,6 +782,26 @@ class SalonApiClient {
 
   Future<void> deleteBeforeAfter(int id) async {
     await _dio.delete<void>('/api/sln-before-after/$id');
+  }
+
+  // ─────────── Phase 11.4: ConsentForms ───────────
+
+  Future<List<ConsentForm>> fetchConsentForms() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-consent-forms');
+    return (res.data ?? []).map((e) => ConsentForm.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ConsentForm> createConsentForm(ConsentFormCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>('/api/sln-consent-forms', data: dto.toJson());
+    return ConsentForm.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateConsentForm(int id, ConsentFormCreate dto) async {
+    await _dio.put<void>('/api/sln-consent-forms/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteConsentForm(int id) async {
+    await _dio.delete<void>('/api/sln-consent-forms/$id');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
