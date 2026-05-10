@@ -12,6 +12,7 @@ import 'package:callcenter_salonuser_mobil/models/before_after_models.dart';
 import 'package:callcenter_salonuser_mobil/models/consent_form_models.dart';
 import 'package:callcenter_salonuser_mobil/models/noshow_policy_models.dart';
 import 'package:callcenter_salonuser_mobil/models/package_models.dart';
+import 'package:callcenter_salonuser_mobil/models/module_request_models.dart';
 import 'package:callcenter_salonuser_mobil/models/personnel_price_models.dart';
 import 'package:callcenter_salonuser_mobil/models/waitlist_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
@@ -889,6 +890,34 @@ class SalonApiClient {
 
   Future<void> deletePersonnelPrice(int id) async {
     await _dio.delete<void>('/api/sln-personnel-prices/$id');
+  }
+
+  // ─────────── Phase 11.8: Module Requests ───────────
+
+  Future<List<ModuleRequest>> fetchModuleRequests() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-module-requests');
+    return (res.data ?? []).map((e) => ModuleRequest.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<AvailableModule>> fetchAvailableModules() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-module-requests/available');
+    return (res.data ?? []).map((e) => AvailableModule.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ModuleRequest> createModuleRequest({required int moduleId, int requestTypeId = 1, String? notes}) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-module-requests',
+      data: {
+        'moduleId': moduleId,
+        'requestTypeId': requestTypeId,
+        if (notes != null) 'notes': notes,
+      },
+    );
+    return ModuleRequest.fromJson(res.data ?? {});
+  }
+
+  Future<void> cancelModuleRequest(int id) async {
+    await _dio.delete<void>('/api/sln-module-requests/$id');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
