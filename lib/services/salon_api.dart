@@ -5,6 +5,7 @@ import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
+import 'package:callcenter_salonuser_mobil/models/sln_review.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_service.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -327,6 +328,34 @@ class SalonApiClient {
     final res = await _dio.get<List<dynamic>>('/api/portal/personnel');
     final raw = res.data ?? [];
     return raw.map((e) => PortalPersonnel.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  // ─────────── Reviews moderation (sln-reviews) ───────────
+
+  Future<List<SlnReview>> getReviews({int? statusId}) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/api/sln-reviews',
+      queryParameters: <String, dynamic>{
+        if (statusId != null) 'statusId': statusId,
+      },
+    );
+    final raw = res.data ?? [];
+    return raw.map((e) => SlnReview.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnReviewStats> getReviewStats() async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-reviews/stats');
+    final data = res.data ?? const <String, dynamic>{};
+    return SlnReviewStats.fromJson(data);
+  }
+
+  /// `PUT /api/sln-reviews/{id}/status/{statusId}` (1=Bekliyor, 2=Onaylandı, 3=Reddedildi).
+  Future<void> updateReviewStatus({required int id, required int statusId}) async {
+    await _dio.put<void>('/api/sln-reviews/$id/status/$statusId');
+  }
+
+  Future<void> deleteReview(int id) async {
+    await _dio.delete<void>('/api/sln-reviews/$id');
   }
 
   Future<List<Map<String, dynamic>>> getAvailableSlots({
