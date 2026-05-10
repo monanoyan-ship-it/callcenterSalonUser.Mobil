@@ -5,6 +5,7 @@ import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
+import 'package:callcenter_salonuser_mobil/models/sln_membership.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_review.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_service.dart';
 import 'package:dio/dio.dart';
@@ -356,6 +357,50 @@ class SalonApiClient {
 
   Future<void> deleteReview(int id) async {
     await _dio.delete<void>('/api/sln-reviews/$id');
+  }
+
+  // ─────────── Memberships (sln-memberships) ───────────
+
+  Future<List<SlnMembershipPlan>> getMembershipPlans() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-memberships/plans');
+    final raw = res.data ?? [];
+    return raw.map((e) => SlnMembershipPlan.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnMembershipPlan> createMembershipPlan(SlnMembershipPlanCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-memberships/plans',
+      data: dto.toJson(),
+    );
+    return SlnMembershipPlan.fromJson(res.data ?? const {});
+  }
+
+  Future<void> updateMembershipPlan(int id, SlnMembershipPlanCreate dto) async {
+    await _dio.put<void>('/api/sln-memberships/plans/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteMembershipPlan(int id) async {
+    await _dio.delete<void>('/api/sln-memberships/plans/$id');
+  }
+
+  Future<List<SlnClientMembership>> getClientMemberships() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-memberships');
+    final raw = res.data ?? [];
+    return raw
+        .map((e) => SlnClientMembership.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> cancelClientMembership(int id) async {
+    await _dio.put<void>('/api/sln-memberships/$id/cancel');
+  }
+
+  Future<void> freezeClientMembership(int id) async {
+    await _dio.put<void>('/api/sln-memberships/$id/freeze');
+  }
+
+  Future<void> reactivateClientMembership(int id) async {
+    await _dio.put<void>('/api/sln-memberships/$id/reactivate');
   }
 
   Future<List<Map<String, dynamic>>> getAvailableSlots({

@@ -1,5 +1,7 @@
 import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/personnel_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/reviews_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
@@ -30,15 +32,15 @@ class MorePage extends StatelessWidget {
         label: 'Personel',
         builder: (_) => const PersonnelPage(),
       ),
-      const _Module(
+      _Module(
         icon: Icons.workspace_premium_outlined,
         label: 'Üyelikler',
-        phase: 'Phase 4',
+        builder: (_) => const MembershipsPage(),
       ),
-      const _Module(
+      _Module(
         icon: Icons.reviews_outlined,
         label: 'Yorumlar',
-        phase: 'Phase 4',
+        builder: (_) => const ReviewsPage(),
       ),
       const _Module(
         icon: Icons.settings_outlined,
