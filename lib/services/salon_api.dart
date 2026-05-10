@@ -8,6 +8,7 @@ import 'package:callcenter_salonuser_mobil/models/expense_models.dart';
 import 'package:callcenter_salonuser_mobil/models/inventory_models.dart';
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/marketing_models.dart';
+import 'package:callcenter_salonuser_mobil/models/waitlist_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_membership.dart';
@@ -735,6 +736,30 @@ class SalonApiClient {
 
   Future<void> deleteExpense(int id) async {
     await _dio.delete<void>('/api/sln-finance/expenses/$id');
+  }
+
+  // ─────────── Phase 11.2: Waitlist ───────────
+
+  Future<List<WaitlistEntry>> fetchWaitlist() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-waitlist');
+    return (res.data ?? []).map((e) => WaitlistEntry.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<WaitlistEntry> createWaitlistEntry(WaitlistEntryCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>('/api/sln-waitlist', data: dto.toJson());
+    return WaitlistEntry.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateWaitlistEntry(int id, WaitlistEntryCreate dto) async {
+    await _dio.put<void>('/api/sln-waitlist/$id', data: dto.toJson());
+  }
+
+  Future<void> updateWaitlistStatus(int id, int statusId) async {
+    await _dio.put<void>('/api/sln-waitlist/$id/status/$statusId');
+  }
+
+  Future<void> deleteWaitlistEntry(int id) async {
+    await _dio.delete<void>('/api/sln-waitlist/$id');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
