@@ -1,4 +1,5 @@
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
+import 'package:callcenter_salonuser_mobil/screens/appointment_detail_page.dart';
 import 'package:callcenter_salonuser_mobil/services/salon_api.dart';
 import 'package:callcenter_salonuser_mobil/util/api_errors.dart';
 import 'package:callcenter_salonuser_mobil/widgets/appointment_tile.dart';
@@ -213,16 +214,16 @@ class _AppointmentsListPageState extends State<AppointmentsListPage> {
                                     appointment: a,
                                     hourFmt: _hour,
                                     dateFmt: showDate ? _dayDate : null,
-                                    onTap: () {
-                                      // P2.4: AppointmentDetailPage push (henüz yok).
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Detay sayfası P2.4 ile gelecek (id ${a.id}).'),
-                                          duration:
-                                              const Duration(seconds: 2),
+                                    onTap: () async {
+                                      final changed =
+                                          await Navigator.of(context).push<bool>(
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              AppointmentDetailPage(
+                                                  appointmentId: a.id),
                                         ),
                                       );
+                                      if (changed == true) _load();
                                     },
                                   );
                                 },
