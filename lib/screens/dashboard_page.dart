@@ -2,6 +2,7 @@ import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/services/salon_api.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/util/api_errors.dart';
+import 'package:callcenter_salonuser_mobil/widgets/appointment_tile.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -149,7 +150,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   )
                 else ...[
                   for (final a in _appointments.take(5)) ...[
-                    _AppointmentTile(appointment: a, hourFmt: _hour),
+                    AppointmentTile(appointment: a, hourFmt: _hour),
                     const SizedBox(height: 8),
                   ],
                   if (_appointments.length > 5)
@@ -209,118 +210,6 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: 6),
         chip('İptal', stats['cancelled'] ?? 0, scheme.errorContainer, scheme.onErrorContainer),
       ],
-    );
-  }
-}
-
-class _AppointmentTile extends StatelessWidget {
-  const _AppointmentTile({required this.appointment, required this.hourFmt});
-  final Appointment appointment;
-  final DateFormat hourFmt;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final services = appointment.serviceNames.join(', ');
-    final timeRange =
-        '${hourFmt.format(appointment.startTime)}–${hourFmt.format(appointment.endTime)}';
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: scheme.primaryContainer,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                timeRange,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: scheme.onPrimaryContainer),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          appointment.clientName.isEmpty
-                              ? 'İsimsiz müşteri'
-                              : appointment.clientName,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      _StatusPill(appointment: appointment),
-                    ],
-                  ),
-                  if (services.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        services,
-                        style: TextStyle(
-                            fontSize: 12, color: scheme.onSurfaceVariant),
-                      ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      'Personel: ${appointment.personnelName}',
-                      style: TextStyle(
-                          fontSize: 12, color: scheme.onSurfaceVariant),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.appointment});
-  final Appointment appointment;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    Color bg;
-    Color fg;
-    if (appointment.isCancelled) {
-      bg = scheme.errorContainer;
-      fg = scheme.onErrorContainer;
-    } else if (appointment.isCompleted) {
-      bg = scheme.surfaceContainerHighest;
-      fg = scheme.onSurfaceVariant;
-    } else if (appointment.isConfirmed) {
-      bg = const Color(0xFFD1FAE5);
-      fg = const Color(0xFF065F46);
-    } else {
-      bg = const Color(0xFFE0E7FF);
-      fg = const Color(0xFF1E40AF);
-    }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        appointment.statusLabel,
-        style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: fg),
-      ),
     );
   }
 }
