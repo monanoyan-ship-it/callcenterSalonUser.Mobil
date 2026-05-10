@@ -1,9 +1,12 @@
+import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/personnel_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// "Daha fazla" sekmesi — Phase 3+'ta açılacak modüller için placeholder.
+/// "Daha fazla" sekmesi — açılan modüller tıklanabilir, kalanlar kilitli.
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
 
@@ -11,15 +14,47 @@ class MorePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final session = context.watch<SessionState>();
     final scheme = Theme.of(context).colorScheme;
-    final modules = const [
-      _Module(icon: Icons.people_outline, label: 'Müşteriler', phase: 'Phase 3'),
-      _Module(icon: Icons.badge_outlined, label: 'Personel', phase: 'Phase 3'),
-      _Module(icon: Icons.list_alt, label: 'Hizmetler', phase: 'Phase 3'),
-      _Module(icon: Icons.workspace_premium_outlined, label: 'Üyelikler', phase: 'Phase 4'),
-      _Module(icon: Icons.reviews_outlined, label: 'Yorumlar', phase: 'Phase 4'),
-      _Module(icon: Icons.settings_outlined, label: 'Salon ayarları', phase: 'Phase 5'),
-      _Module(icon: Icons.account_balance_outlined, label: 'Ödeme bilgileri (IBAN)', phase: 'Phase 5'),
-      _Module(icon: Icons.bar_chart, label: 'Raporlar', phase: 'Phase 6'),
+    final modules = <_Module>[
+      _Module(
+        icon: Icons.people_outline,
+        label: 'Müşteriler',
+        builder: (_) => const ClientsPage(),
+      ),
+      _Module(
+        icon: Icons.list_alt,
+        label: 'Hizmetler',
+        builder: (_) => const ServicesPage(),
+      ),
+      _Module(
+        icon: Icons.badge_outlined,
+        label: 'Personel',
+        builder: (_) => const PersonnelPage(),
+      ),
+      const _Module(
+        icon: Icons.workspace_premium_outlined,
+        label: 'Üyelikler',
+        phase: 'Phase 4',
+      ),
+      const _Module(
+        icon: Icons.reviews_outlined,
+        label: 'Yorumlar',
+        phase: 'Phase 4',
+      ),
+      const _Module(
+        icon: Icons.settings_outlined,
+        label: 'Salon ayarları',
+        phase: 'Phase 5',
+      ),
+      const _Module(
+        icon: Icons.account_balance_outlined,
+        label: 'Ödeme bilgileri (IBAN)',
+        phase: 'Phase 5',
+      ),
+      const _Module(
+        icon: Icons.bar_chart,
+        label: 'Raporlar',
+        phase: 'Phase 6',
+      ),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -36,44 +71,36 @@ class MorePage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Salon yönetim modülleri',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Sırayla devreye girecek modüller. Her biri tamamlandığında bu listeden açılır.',
-                      style: TextStyle(
-                          fontSize: 12.5, color: scheme.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
             for (final m in modules)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 6),
                 child: Card(
                   child: ListTile(
-                    leading: Icon(m.icon, color: scheme.onSurfaceVariant),
-                    title: Text(m.label),
-                    subtitle: Text(
-                      'Yakında · ${m.phase}',
-                      style: TextStyle(
-                          fontSize: 11.5, color: scheme.onSurfaceVariant),
+                    leading: Icon(
+                      m.icon,
+                      color: m.builder == null
+                          ? scheme.onSurfaceVariant
+                          : scheme.primary,
                     ),
-                    trailing: const Icon(Icons.lock_clock,
-                        size: 18, color: Colors.black26),
-                    enabled: false,
+                    title: Text(m.label),
+                    subtitle: m.builder == null
+                        ? Text(
+                            'Yakında · ${m.phase}',
+                            style: TextStyle(
+                                fontSize: 11.5,
+                                color: scheme.onSurfaceVariant),
+                          )
+                        : null,
+                    trailing: m.builder == null
+                        ? const Icon(Icons.lock_clock,
+                            size: 18, color: Colors.black26)
+                        : const Icon(Icons.chevron_right),
+                    enabled: m.builder != null,
+                    onTap: m.builder == null
+                        ? null
+                        : () => Navigator.of(context).push(
+                              MaterialPageRoute(builder: m.builder!),
+                            ),
                   ),
                 ),
               ),
@@ -85,8 +112,14 @@ class MorePage extends StatelessWidget {
 }
 
 class _Module {
-  const _Module({required this.icon, required this.label, required this.phase});
+  const _Module({
+    required this.icon,
+    required this.label,
+    this.builder,
+    this.phase = '',
+  });
   final IconData icon;
   final String label;
+  final WidgetBuilder? builder;
   final String phase;
 }

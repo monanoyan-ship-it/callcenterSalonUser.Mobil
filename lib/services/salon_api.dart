@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
+import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_service.dart';
 import 'package:dio/dio.dart';
@@ -316,6 +317,16 @@ class SalonApiClient {
 
   Future<void> deleteService(int id) async {
     await _dio.delete<void>('/api/sln-services/$id');
+  }
+
+  // ─────────── Personnel (portal) — read-only ───────────
+
+  /// `GET /api/portal/personnel` — CustomerPersonnel listesi.
+  /// CustomerId JWT claim'inden okunur (server-side); query param vermeye gerek yok.
+  Future<List<PortalPersonnel>> getPersonnel() async {
+    final res = await _dio.get<List<dynamic>>('/api/portal/personnel');
+    final raw = res.data ?? [];
+    return raw.map((e) => PortalPersonnel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   Future<List<Map<String, dynamic>>> getAvailableSlots({
