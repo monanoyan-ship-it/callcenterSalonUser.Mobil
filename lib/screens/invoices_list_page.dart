@@ -1,5 +1,6 @@
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/screens/invoice_detail_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/invoice_edit_page.dart';
 import 'package:callcenter_salonuser_mobil/services/salon_api.dart';
 import 'package:callcenter_salonuser_mobil/util/api_errors.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
@@ -140,6 +141,17 @@ class _InvoicesListPageState extends State<InvoicesListPage> {
             icon: const Icon(Icons.refresh),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await Navigator.push<void>(
+            context,
+            MaterialPageRoute(builder: (_) => const InvoiceEditPage()),
+          );
+          if (mounted) _load();
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Yeni adisyon'),
       ),
       body: ResponsiveCenter(
         child: Column(
