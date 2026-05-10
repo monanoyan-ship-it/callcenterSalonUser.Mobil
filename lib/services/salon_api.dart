@@ -6,6 +6,7 @@ import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:callcenter_salonuser_mobil/models/cash_models.dart';
 import 'package:callcenter_salonuser_mobil/models/inventory_models.dart';
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
+import 'package:callcenter_salonuser_mobil/models/marketing_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_membership.dart';
@@ -577,6 +578,123 @@ class SalonApiClient {
 
   Future<void> deleteRecipe(int id) async {
     await _dio.delete<void>('/api/sln-recipes/$id');
+  }
+
+  // ─────────── Phase 10: Pazarlama (Campaigns/Email/Winback/GiftCards) ───────────
+
+  // SMS Campaigns (sln-marketing/campaigns)
+  Future<List<SlnCampaign>> fetchCampaigns() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-marketing/campaigns');
+    return (res.data ?? []).map((e) => SlnCampaign.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnCampaign> fetchCampaign(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-marketing/campaigns/$id');
+    return SlnCampaign.fromJson(res.data ?? {});
+  }
+
+  Future<SlnCampaign> createCampaign(SlnCampaignCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-marketing/campaigns',
+      data: dto.toJson(),
+    );
+    return SlnCampaign.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateCampaign(int id, SlnCampaignCreate dto) async {
+    await _dio.put<void>('/api/sln-marketing/campaigns/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteCampaign(int id) async {
+    await _dio.delete<void>('/api/sln-marketing/campaigns/$id');
+  }
+
+  Future<void> sendCampaign(int id) async {
+    await _dio.post<void>('/api/sln-marketing/campaigns/$id/send');
+  }
+
+  // Email Campaigns (sln-email-campaigns)
+  Future<List<SlnEmailCampaign>> fetchEmailCampaigns() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-email-campaigns');
+    return (res.data ?? []).map((e) => SlnEmailCampaign.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnEmailCampaign> createEmailCampaign(SlnEmailCampaignCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-email-campaigns',
+      data: dto.toJson(),
+    );
+    return SlnEmailCampaign.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateEmailCampaign(int id, SlnEmailCampaignCreate dto) async {
+    await _dio.put<void>('/api/sln-email-campaigns/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteEmailCampaign(int id) async {
+    await _dio.delete<void>('/api/sln-email-campaigns/$id');
+  }
+
+  Future<void> sendEmailCampaign(int id) async {
+    await _dio.post<void>('/api/sln-email-campaigns/$id/send');
+  }
+
+  // Winback (sln-winback)
+  Future<List<SlnWinbackRule>> fetchWinbackRules() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-winback');
+    return (res.data ?? []).map((e) => SlnWinbackRule.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnWinbackRule> createWinbackRule(SlnWinbackRuleCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-winback',
+      data: dto.toJson(),
+    );
+    return SlnWinbackRule.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateWinbackRule(int id, SlnWinbackRuleCreate dto) async {
+    await _dio.put<void>('/api/sln-winback/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteWinbackRule(int id) async {
+    await _dio.delete<void>('/api/sln-winback/$id');
+  }
+
+  Future<void> toggleWinbackRule(int id) async {
+    await _dio.post<void>('/api/sln-winback/$id/toggle');
+  }
+
+  Future<SlnWinbackPreview> previewWinback(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-winback/$id/preview');
+    return SlnWinbackPreview.fromJson(res.data ?? {});
+  }
+
+  Future<void> winbackToCampaign(int id) async {
+    await _dio.post<void>('/api/sln-winback/$id/create-campaign');
+  }
+
+  // Gift Cards (sln-gift-cards)
+  Future<List<SlnGiftCard>> fetchGiftCards() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-gift-cards');
+    return (res.data ?? []).map((e) => SlnGiftCard.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnGiftCard> fetchGiftCardByCode(String code) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-gift-cards/by-code/$code');
+    return SlnGiftCard.fromJson(res.data ?? {});
+  }
+
+  Future<SlnGiftCard> createGiftCard(SlnGiftCardCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-gift-cards',
+      data: dto.toJson(),
+    );
+    return SlnGiftCard.fromJson(res.data ?? {});
+  }
+
+  Future<void> deactivateGiftCard(int id) async {
+    await _dio.put<void>('/api/sln-gift-cards/$id/deactivate');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
