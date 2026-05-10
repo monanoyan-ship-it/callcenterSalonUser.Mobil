@@ -1,4 +1,5 @@
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
+import 'package:callcenter_salonuser_mobil/screens/invoice_detail_page.dart';
 import 'package:callcenter_salonuser_mobil/services/salon_api.dart';
 import 'package:callcenter_salonuser_mobil/util/api_errors.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
@@ -332,9 +333,11 @@ class _InvoiceTile extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: () {
-          // P8.3 InvoiceDetailPage eklendiginde route burada acilacak.
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Adisyon detayi (P8.3) yakinda.')),
+          Navigator.push<void>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => InvoiceDetailPage(invoiceId: invoice.id),
+            ),
           );
         },
         borderRadius: BorderRadius.circular(12),
