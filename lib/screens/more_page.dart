@@ -6,10 +6,13 @@ import 'package:callcenter_salonuser_mobil/screens/loyalty_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/payment_info_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/personnel_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/products_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/recipes_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/reports_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/reviews_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/settings_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/suppliers_page.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +46,21 @@ class MorePage extends StatelessWidget {
         icon: Icons.list_alt,
         label: 'Hizmetler',
         builder: (_) => const ServicesPage(),
+      ),
+      _Module(
+        icon: Icons.inventory_2_outlined,
+        label: 'Ürünler',
+        builder: (_) => const ProductsPage(),
+      ),
+      _Module(
+        icon: Icons.local_shipping_outlined,
+        label: 'Tedarikçiler',
+        builder: (_) => const SuppliersPage(),
+      ),
+      _Module(
+        icon: Icons.menu_book_outlined,
+        label: 'Reçeteler',
+        builder: (_) => const RecipesPage(),
       ),
       _Module(
         icon: Icons.badge_outlined,
