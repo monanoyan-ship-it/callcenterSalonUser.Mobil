@@ -86,6 +86,7 @@ Flutter SDK: `C:\Users\Ahmet\flutter_sdk_stable\bin\flutter.bat` (PATH'te değil
 
 ## Kuralları
 
+- **Push KESINLIKLE talepsiz yapılmaz.** Her adımın sonunda **commit** evet, ama `git push` sadece kullanıcı açıkça "push" dediğinde. Aksi halde local'de bekleyen commit'ler birikir.
 - **Memory'ye not düşme** — Claude'a özel kalır, ChatGPT okumaz. Kural/tercih → bu CLAUDE.md veya ClaudeManager journal/pattern.
 - Build'de Windows symlink desteği için **Developer Mode ON** gerekir (callcenterSalon.Mobil deneyiminden).
 - `salon.xml` dosyası **YOK** — salon çevirileri `callcenter/src/CallCenter.Salon/wwwroot/translations-salon.xml`.
