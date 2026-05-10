@@ -1,14 +1,21 @@
+import 'package:callcenter_salonuser_mobil/screens/before_after_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/branches_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/campaigns_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/cash_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/consent_forms_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/email_campaigns_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/expenses_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/gift_cards_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/invoices_list_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/loyalty_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/modules_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/noshow_policy_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/packages_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/payment_info_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/personnel_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/personnel_prices_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/products_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/recipes_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/reports_page.dart';
@@ -16,6 +23,7 @@ import 'package:callcenter_salonuser_mobil/screens/reviews_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/settings_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/suppliers_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/waitlist_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/winback_page.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
@@ -125,6 +133,47 @@ class MorePage extends StatelessWidget {
         icon: Icons.loyalty_outlined,
         label: 'Sadakat',
         builder: (_) => const LoyaltyPage(),
+      ),
+      // ─── Phase 11: Operasyon Domain ───
+      _Module(
+        icon: Icons.payments_outlined,
+        label: 'Giderler',
+        builder: (_) => const ExpensesPage(),
+      ),
+      _Module(
+        icon: Icons.event_available,
+        label: 'Bekleme Listesi',
+        builder: (_) => const WaitlistPage(),
+      ),
+      _Module(
+        icon: Icons.compare,
+        label: 'Öncesi/Sonrası',
+        builder: (_) => const BeforeAfterPage(),
+      ),
+      _Module(
+        icon: Icons.assignment_outlined,
+        label: 'Onam Formları',
+        builder: (_) => const ConsentFormsPage(),
+      ),
+      _Module(
+        icon: Icons.gavel,
+        label: 'Gelmeme Politikası',
+        builder: (_) => const NoShowPolicyPage(),
+      ),
+      _Module(
+        icon: Icons.collections_bookmark_outlined,
+        label: 'Paketler',
+        builder: (_) => const PackagesPage(),
+      ),
+      _Module(
+        icon: Icons.attach_money,
+        label: 'Personel Fiyat Override',
+        builder: (_) => const PersonnelPricesPage(),
+      ),
+      _Module(
+        icon: Icons.extension_outlined,
+        label: 'Modüller (satın alma)',
+        builder: (_) => const ModulesPage(),
       ),
     ];
     return Scaffold(
