@@ -1,5 +1,6 @@
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/screens/appointment_edit_dialog.dart';
+import 'package:callcenter_salonuser_mobil/screens/invoice_edit_page.dart';
 import 'package:callcenter_salonuser_mobil/services/salon_api.dart';
 import 'package:callcenter_salonuser_mobil/util/api_errors.dart';
 import 'package:callcenter_salonuser_mobil/widgets/appointment_tile.dart';
@@ -486,6 +487,37 @@ class _DetailBody extends StatelessWidget {
                     fontSize: 13, color: scheme.onSurfaceVariant),
               ),
             ),
+          ),
+        ],
+        // P8.5 — Adisyon olustur. Iptal disindaki tum randevular icin gorunur;
+        // online on odeme varsa indirim olarak yansir.
+        if (!appointment.isCancelled) ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => InvoiceEditPage(
+                    fromAppointment: AppointmentPrefill(
+                      appointmentId: appointment.id,
+                      slnClientId: appointment.slnClientId,
+                      clientName: appointment.clientName,
+                      clientPhone: appointment.clientPhone,
+                      serviceIds: appointment.serviceIds,
+                      personnelId: appointment.personnelId,
+                      personnelName: appointment.personnelName,
+                      isPrepaid: appointment.isPrepaid,
+                      prepaidAmount: appointment.prepaidAmount,
+                    ),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.receipt_long_outlined),
+            label: Text(appointment.isPrepaid && appointment.prepaidAmount > 0
+                ? 'Adisyon olustur (kalan tahsilat)'
+                : 'Adisyon olustur'),
           ),
         ],
       ],

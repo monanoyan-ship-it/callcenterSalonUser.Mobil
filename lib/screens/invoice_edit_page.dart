@@ -13,11 +13,42 @@ import 'package:provider/provider.dart';
 /// Yeni adisyon olusturma. Musteri arama (autocomplete), hizmet kalemi ekle (kategori
 /// drill-down), indirim/bahsis/notlar, odeme tipi sec, kaydet → InvoiceDetailPage.
 /// Web Sales/Index.cshtml + Sales.js paralel.
+///
+/// `fromAppointment` verilirse: kalemler appointment.serviceIds'tan prefill, online on
+/// odeme (isPrepaid + prepaidAmount) varsa indirim olarak yansir, musteri otomatik bagli.
 class InvoiceEditPage extends StatefulWidget {
-  const InvoiceEditPage({super.key});
+  const InvoiceEditPage({super.key, this.fromAppointment});
+
+  final AppointmentPrefill? fromAppointment;
 
   @override
   State<InvoiceEditPage> createState() => _InvoiceEditPageState();
+}
+
+/// `InvoiceEditPage.fromAppointment` icin tasiyici. AppointmentDetailPage'den gecerken
+/// servis ID'leri + on odeme bilgisi + musteri taraflarini iletir.
+class AppointmentPrefill {
+  AppointmentPrefill({
+    required this.appointmentId,
+    required this.slnClientId,
+    required this.clientName,
+    required this.serviceIds,
+    required this.personnelId,
+    required this.personnelName,
+    this.isPrepaid = false,
+    this.prepaidAmount = 0,
+    this.clientPhone,
+  });
+
+  final int appointmentId;
+  final int slnClientId;
+  final String clientName;
+  final String? clientPhone;
+  final List<int> serviceIds;
+  final int personnelId;
+  final String personnelName;
+  final bool isPrepaid;
+  final double prepaidAmount;
 }
 
 class _InvoiceEditPageState extends State<InvoiceEditPage> {
@@ -69,6 +100,7 @@ class _InvoiceEditPageState extends State<InvoiceEditPage> {
         _personnel = pers;
         _bootstrapping = false;
       });
+      _applyAppointmentPrefill();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -76,6 +108,63 @@ class _InvoiceEditPageState extends State<InvoiceEditPage> {
         _bootstrapping = false;
       });
     }
+  }
+
+  void _applyAppointmentPrefill() {
+    final pre = widget.fromAppointment;
+    if (pre == null) return;
+
+    final allServices = <int, SlnService>{};
+    for (final cat in _categories) {
+      for (final s in cat.services) {
+        allServices[s.id] = s;
+      }
+    }
+
+    PortalPersonnel? assigned;
+    for (final p in _personnel) {
+      if (p.id == pre.personnelId) {
+        assigned = p;
+        break;
+      }
+    }
+
+    final drafted = <_DraftItem>[];
+    for (final sid in pre.serviceIds) {
+      final s = allServices[sid];
+      if (s == null) continue;
+      drafted.add(_DraftItem(
+        serviceId: s.id,
+        serviceName: s.name,
+        unitPrice: s.price,
+        personnelId: assigned?.id,
+        personnelName: assigned?.title,
+      ));
+    }
+
+    setState(() {
+      _client = SlnClient(
+        id: pre.slnClientId,
+        fullName: pre.clientName,
+        phone: pre.clientPhone,
+        isFavorite: false,
+        createdAt: DateTime.now(),
+        visitCount: 0,
+        totalSpent: 0,
+      );
+      _items
+        ..clear()
+        ..addAll(drafted);
+      // Online on odeme = adisyon indirimi (musteri kalan tutari oder).
+      if (pre.isPrepaid && pre.prepaidAmount > 0) {
+        _discountCtrl.text = pre.prepaidAmount.toStringAsFixed(2);
+        _notesCtrl.text =
+            'Online on odeme: ${pre.prepaidAmount.toStringAsFixed(2)} TL '
+            '(Randevu #${pre.appointmentId})';
+      } else {
+        _notesCtrl.text = 'Randevu #${pre.appointmentId}';
+      }
+    });
   }
 
   double get _itemsSubtotal => _items.fold(0, (sum, i) {
