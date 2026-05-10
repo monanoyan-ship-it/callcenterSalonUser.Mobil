@@ -1,6 +1,9 @@
 import 'package:callcenter_salonuser_mobil/screens/branches_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/campaigns_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/cash_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/email_campaigns_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/gift_cards_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/invoices_list_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/loyalty_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
@@ -13,6 +16,7 @@ import 'package:callcenter_salonuser_mobil/screens/reviews_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/settings_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/suppliers_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/winback_page.dart';
 import 'package:callcenter_salonuser_mobil/state/session_state.dart';
 import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +75,26 @@ class MorePage extends StatelessWidget {
         icon: Icons.workspace_premium_outlined,
         label: 'Üyelikler',
         builder: (_) => const MembershipsPage(),
+      ),
+      _Module(
+        icon: Icons.card_giftcard,
+        label: 'Hediye Kartları',
+        builder: (_) => const GiftCardsPage(),
+      ),
+      _Module(
+        icon: Icons.campaign_outlined,
+        label: 'SMS Kampanyaları',
+        builder: (_) => const CampaignsPage(),
+      ),
+      _Module(
+        icon: Icons.alternate_email,
+        label: 'Email Kampanyaları',
+        builder: (_) => const EmailCampaignsPage(),
+      ),
+      _Module(
+        icon: Icons.refresh,
+        label: 'Winback (Kayıp müşteri)',
+        builder: (_) => const WinbackPage(),
       ),
       _Module(
         icon: Icons.reviews_outlined,
