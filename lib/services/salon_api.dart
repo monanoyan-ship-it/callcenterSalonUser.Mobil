@@ -11,6 +11,7 @@ import 'package:callcenter_salonuser_mobil/models/marketing_models.dart';
 import 'package:callcenter_salonuser_mobil/models/before_after_models.dart';
 import 'package:callcenter_salonuser_mobil/models/consent_form_models.dart';
 import 'package:callcenter_salonuser_mobil/models/noshow_policy_models.dart';
+import 'package:callcenter_salonuser_mobil/models/package_models.dart';
 import 'package:callcenter_salonuser_mobil/models/waitlist_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
@@ -818,6 +819,56 @@ class SalonApiClient {
   Future<NoShowPolicy> upsertNoShowPolicy(NoShowPolicyUpdate dto) async {
     final res = await _dio.post<Map<String, dynamic>>('/api/sln-noshow-policy', data: dto.toJson());
     return NoShowPolicy.fromJson(res.data ?? {});
+  }
+
+  // ─────────── Phase 11.6: Packages ───────────
+
+  Future<List<PackageDefinition>> fetchPackageDefinitions() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-packages/definitions');
+    return (res.data ?? []).map((e) => PackageDefinition.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<PackageDefinition> createPackageDefinition(PackageDefinitionCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-packages/definitions',
+      data: dto.toJson(),
+    );
+    return PackageDefinition.fromJson(res.data ?? {});
+  }
+
+  Future<void> updatePackageDefinition(int id, PackageDefinitionCreate dto) async {
+    await _dio.put<void>('/api/sln-packages/definitions/$id', data: dto.toJson());
+  }
+
+  Future<void> deletePackageDefinition(int id) async {
+    await _dio.delete<void>('/api/sln-packages/definitions/$id');
+  }
+
+  Future<List<ClientPackage>> fetchClientPackages() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-packages/client-packages');
+    return (res.data ?? []).map((e) => ClientPackage.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ClientPackage> sellPackage({required int packageDefinitionId, int? slnClientId, int paymentMethodId = 1}) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-packages/sell',
+      data: {
+        'packageDefinitionId': packageDefinitionId,
+        if (slnClientId != null) 'slnClientId': slnClientId,
+        'paymentMethodId': paymentMethodId,
+      },
+    );
+    return ClientPackage.fromJson(res.data ?? {});
+  }
+
+  Future<void> usePackage({required int clientPackageId, String? notes}) async {
+    await _dio.post<void>(
+      '/api/sln-packages/use',
+      data: {
+        'clientPackageId': clientPackageId,
+        if (notes != null) 'notes': notes,
+      },
+    );
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
