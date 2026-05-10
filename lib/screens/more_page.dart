@@ -1,8 +1,10 @@
 import 'package:callcenter_salonuser_mobil/screens/branches_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/clients_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/loyalty_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/memberships_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/payment_info_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/personnel_page.dart';
+import 'package:callcenter_salonuser_mobil/screens/reports_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/reviews_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/services_page.dart';
 import 'package:callcenter_salonuser_mobil/screens/settings_page.dart';
@@ -11,7 +13,7 @@ import 'package:callcenter_salonuser_mobil/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// "Daha fazla" sekmesi — açılan modüller tıklanabilir, kalanlar kilitli.
+/// "Daha fazla" sekmesi — tüm modül sayfalarına gidiş.
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
 
@@ -60,10 +62,15 @@ class MorePage extends StatelessWidget {
         label: 'Ödeme bilgileri (IBAN)',
         builder: (_) => const PaymentInfoPage(),
       ),
-      const _Module(
+      _Module(
         icon: Icons.bar_chart,
         label: 'Raporlar',
-        phase: 'Phase 6',
+        builder: (_) => const ReportsPage(),
+      ),
+      _Module(
+        icon: Icons.loyalty_outlined,
+        label: 'Sadakat',
+        builder: (_) => const LoyaltyPage(),
       ),
     ];
     return Scaffold(
@@ -86,31 +93,12 @@ class MorePage extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Card(
                   child: ListTile(
-                    leading: Icon(
-                      m.icon,
-                      color: m.builder == null
-                          ? scheme.onSurfaceVariant
-                          : scheme.primary,
-                    ),
+                    leading: Icon(m.icon, color: scheme.primary),
                     title: Text(m.label),
-                    subtitle: m.builder == null
-                        ? Text(
-                            'Yakında · ${m.phase}',
-                            style: TextStyle(
-                                fontSize: 11.5,
-                                color: scheme.onSurfaceVariant),
-                          )
-                        : null,
-                    trailing: m.builder == null
-                        ? const Icon(Icons.lock_clock,
-                            size: 18, color: Colors.black26)
-                        : const Icon(Icons.chevron_right),
-                    enabled: m.builder != null,
-                    onTap: m.builder == null
-                        ? null
-                        : () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: m.builder!),
-                            ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: m.builder),
+                    ),
                   ),
                 ),
               ),
@@ -122,14 +110,8 @@ class MorePage extends StatelessWidget {
 }
 
 class _Module {
-  const _Module({
-    required this.icon,
-    required this.label,
-    this.builder,
-    this.phase = '',
-  });
+  const _Module({required this.icon, required this.label, required this.builder});
   final IconData icon;
   final String label;
-  final WidgetBuilder? builder;
-  final String phase;
+  final WidgetBuilder builder;
 }

@@ -455,6 +455,66 @@ class SalonApiClient {
     return raw.cast<Map<String, dynamic>>();
   }
 
+  // ─────────── Reports (sln-reports) ───────────
+
+  Future<Map<String, dynamic>> getReportKpis({DateTime? from, DateTime? to}) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/api/sln-reports/kpis',
+      queryParameters: <String, dynamic>{
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+      },
+    );
+    return res.data ?? {};
+  }
+
+  Future<List<Map<String, dynamic>>> getReportStaff(
+      {DateTime? from, DateTime? to}) async {
+    final res = await _dio.get<dynamic>(
+      '/api/sln-reports/staff',
+      queryParameters: <String, dynamic>{
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+      },
+    );
+    final raw = res.data;
+    if (raw is List) return raw.cast<Map<String, dynamic>>();
+    if (raw is Map<String, dynamic>) {
+      final items = raw['items'] ?? raw['data'] ?? raw['rows'];
+      if (items is List) return items.cast<Map<String, dynamic>>();
+    }
+    return const [];
+  }
+
+  Future<Map<String, dynamic>> getReportSales(
+      {DateTime? from, DateTime? to}) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/api/sln-reports/sales',
+      queryParameters: <String, dynamic>{
+        if (from != null) 'from': from.toUtc().toIso8601String(),
+        if (to != null) 'to': to.toUtc().toIso8601String(),
+      },
+    );
+    return res.data ?? {};
+  }
+
+  // ─────────── Loyalty (sln-loyalty) ───────────
+
+  Future<Map<String, dynamic>> getLoyaltyConfig() async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-loyalty/config');
+    return res.data ?? {};
+  }
+
+  Future<void> saveLoyaltyConfig(Map<String, dynamic> body) async {
+    await _dio.post<void>('/api/sln-loyalty/config', data: body);
+  }
+
+  Future<List<Map<String, dynamic>>> getLoyaltyClients() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-loyalty/clients');
+    final raw = res.data ?? [];
+    return raw.cast<Map<String, dynamic>>();
+  }
+
   Future<List<Map<String, dynamic>>> getAvailableSlots({
     required int personnelId,
     required DateTime date,
