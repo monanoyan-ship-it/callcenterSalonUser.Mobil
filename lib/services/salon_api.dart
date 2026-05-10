@@ -4,6 +4,7 @@ import 'package:callcenter_salonuser_mobil/config/app_config.dart';
 import 'package:callcenter_salonuser_mobil/models/appointment_models.dart';
 import 'package:callcenter_salonuser_mobil/models/auth_models.dart';
 import 'package:callcenter_salonuser_mobil/models/cash_models.dart';
+import 'package:callcenter_salonuser_mobil/models/inventory_models.dart';
 import 'package:callcenter_salonuser_mobil/models/invoice_models.dart';
 import 'package:callcenter_salonuser_mobil/models/portal_personnel.dart';
 import 'package:callcenter_salonuser_mobil/models/sln_client.dart';
@@ -487,6 +488,95 @@ class SalonApiClient {
     if (raw is List) return raw;
     if (raw is Map && raw['items'] is List) return raw['items'] as List<dynamic>;
     return const [];
+  }
+
+  // ─────────── Phase 9: Envanter (Products / Suppliers / Recipes) ───────────
+
+  // Products
+  Future<List<SlnProduct>> fetchProducts() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-products');
+    return (res.data ?? []).map((e) => SlnProduct.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnProduct> fetchProduct(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-products/$id');
+    return SlnProduct.fromJson(res.data ?? {});
+  }
+
+  Future<SlnProduct> createProduct(SlnProductCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-products',
+      data: dto.toJson(),
+    );
+    return SlnProduct.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateProduct(int id, SlnProductCreate dto) async {
+    await _dio.put<void>('/api/sln-products/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteProduct(int id) async {
+    await _dio.delete<void>('/api/sln-products/$id');
+  }
+
+  // Product Categories + Brands (urun formu icin gerekli)
+  Future<List<SlnProductCategory>> fetchProductCategories() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-products/categories');
+    return (res.data ?? []).map((e) => SlnProductCategory.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<SlnBrand>> fetchProductBrands() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-products/brands');
+    return (res.data ?? []).map((e) => SlnBrand.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  // Suppliers (sln-products altinda)
+  Future<List<SlnSupplier>> fetchSuppliers() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-products/suppliers');
+    return (res.data ?? []).map((e) => SlnSupplier.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnSupplier> createSupplier(SlnSupplierCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-products/suppliers',
+      data: dto.toJson(),
+    );
+    return SlnSupplier.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateSupplier(int id, SlnSupplierCreate dto) async {
+    await _dio.put<void>('/api/sln-products/suppliers/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteSupplier(int id) async {
+    await _dio.delete<void>('/api/sln-products/suppliers/$id');
+  }
+
+  // Recipes (sln-recipes)
+  Future<List<SlnRecipe>> fetchRecipes() async {
+    final res = await _dio.get<List<dynamic>>('/api/sln-recipes');
+    return (res.data ?? []).map((e) => SlnRecipe.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SlnRecipe> fetchRecipe(int id) async {
+    final res = await _dio.get<Map<String, dynamic>>('/api/sln-recipes/$id');
+    return SlnRecipe.fromJson(res.data ?? {});
+  }
+
+  Future<SlnRecipe> createRecipe(SlnRecipeCreate dto) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/api/sln-recipes',
+      data: dto.toJson(),
+    );
+    return SlnRecipe.fromJson(res.data ?? {});
+  }
+
+  Future<void> updateRecipe(int id, SlnRecipeCreate dto) async {
+    await _dio.put<void>('/api/sln-recipes/$id', data: dto.toJson());
+  }
+
+  Future<void> deleteRecipe(int id) async {
+    await _dio.delete<void>('/api/sln-recipes/$id');
   }
 
   // ─────────── Salon profile + page settings + payment info (sln-profile) ───────────
